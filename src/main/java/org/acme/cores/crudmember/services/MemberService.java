@@ -13,7 +13,7 @@ public interface MemberService {
 
     Member save(Member member);
 
-    Member update(Member member) throws CustomException;
+    Member update(Long id,Member member) throws CustomException;
 
     String delete(Long id) throws CustomException;
 

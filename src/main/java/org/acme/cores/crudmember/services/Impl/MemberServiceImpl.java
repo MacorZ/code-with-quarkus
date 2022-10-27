@@ -7,6 +7,7 @@ import org.acme.exeptions.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,29 +30,30 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Member update(Member member) throws CustomException {
-        Member optionalMember = memberRepository.findById(member.getId()).map(member1 -> member).get();
-        if (optionalMember == null) {
+    public Member update(Long id, Member member) throws CustomException {
+        member.setId(id);
+        Optional<Member> optionalMember = memberRepository.findById(id);
+        if (!optionalMember.isPresent()) {
             throw new CustomException("Không tồn tại");
         }
-        return memberRepository.save(optionalMember);
+
+        return memberRepository.save(optionalMember.map(member1 -> member).get());
     }
 
     @Override
     public String delete(Long id) throws CustomException {
         Optional<Member> optionalMember = memberRepository.findById(id);
         if (optionalMember.isPresent()) {
-            memberRepository.delete(optionalMember.get());
-            return "";
+            memberRepository.deleteById(id);
+            return "xóa thành công member:" + optionalMember.get();
         } else {
             throw new CustomException("Không tồn tại");
         }
-
 
     }
 
     @Override
     public List<Member> getByTen(String ten) {
-        return null;
+        return memberRepository.findMemberByNameContainingIgnoreCase(ten);
     }
 }
